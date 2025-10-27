@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import type React from "react"
+import Image from "next/image"
 
 // Badge component for consistency
 function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
@@ -23,17 +24,17 @@ export default function DocumentationSection() {
     {
       title: "SaaS, ERP, CRM Solutions",
       description: "Scalable microservices, integrations, secure architecture, and tailored business workflows.",
-      image: "/modern-dashboard-interface-with-data-visualization.jpg",
+      image: "/illustrations/1.jpg",
     },
     {
       title: "Managed Offshore Development Teams",
       description: "Senior engineers, U.S.-grade processes, hiring, QA, and full management.",
-      image: "/analytics-dashboard.png",
+      image: "/illustrations/2.jpg",
     },
     {
       title: "AI Automation and Agents",
       description: "Custom AI agents, workflow automation, orchestration, deployment, monitoring, and optimization.",
-      image: "/team-collaboration-interface-with-shared-workspace.jpg",
+      image: "/illustrations/3.jpg",
     },
   ]
 
@@ -112,15 +113,15 @@ export default function DocumentationSection() {
 
           {/* Right Column - Image */}
           <div className="w-full md:w-auto rounded-lg flex flex-col justify-center items-center gap-2 order-1 md:order-2 md:px-0 px-[00]">
-            <div className="w-full md:w-[580px] h-[250px] md:h-[420px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-lg flex flex-col justify-start items-start">
-              <div
-                className={`w-full h-full transition-all duration-300 ${
-                  activeCard === 0
-                    ? "bg-gradient-to-br from-blue-50 to-blue-100"
-                    : activeCard === 1
-                      ? "bg-gradient-to-br from-purple-50 to-purple-100"
-                      : "bg-gradient-to-br from-green-50 to-green-100"
-                }`}
+            <div className="w-full md:w-[580px] h-[250px] md:h-[420px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-lg flex flex-col justify-start items-start relative">
+              <Image
+                src={cards[activeCard].image}
+                alt={cards[activeCard].title}
+                fill
+                className="object-cover transition-opacity duration-300"
+                sizes="(max-width: 768px) 100vw, 580px"
+                priority
+                style={{ transform: "scale(0.8)", transformOrigin: "center" }}
               />
             </div>
           </div>

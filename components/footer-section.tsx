@@ -25,7 +25,9 @@ export default function FooterSection() {
 
           {/* Brand Description */}
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-sm font-sans">
-            Turn your vision into reality and elevate your business to the next level with us.
+            Your imagination,our code,
+            <br />
+            pixel-perfect reality
           </p>
         </div>
 
