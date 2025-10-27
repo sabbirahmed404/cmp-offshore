@@ -90,6 +90,17 @@ const faqData: FAQItem[] = [
   },
 ]
 
+// Hide selected questions without deleting the source data
+const hiddenQuestions = new Set<string>([
+  "How do you secure our data and systems?",
+  "How does your pricing compare to U.S. teams?",
+  "Do you comply with privacy and industry standards?",
+  "How do you handle support and maintenance?",
+  "How long does onboarding take?",
+])
+
+const visibleFaqData = faqData.filter((item) => !hiddenQuestions.has(item.question))
+
 function ChevronDownIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -130,7 +141,7 @@ export default function FAQSection() {
         {/* Right Column - FAQ Items */}
         <div className="w-full lg:flex-1 flex flex-col justify-center items-center">
           <div className="w-full flex flex-col">
-            {faqData.map((item, index) => {
+            {visibleFaqData.map((item, index) => {
               const isOpen = openItems.includes(index)
 
               return (

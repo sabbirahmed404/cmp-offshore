@@ -307,7 +307,7 @@ export default function PricingSection() {
                 </div>
 
             {/* Team Cost Estimator Card - Full Width */}
-            <div className="w-full px-3 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 bg-[#FAFAFA] border border-[rgba(50,45,43,0.12)] overflow-hidden flex flex-col justify-start items-start gap-4 sm:gap-6 md:gap-8 rounded-lg">
+            <div className="w-full px-3 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 bg-[#FAFAFA] border border-[rgba(50,45,43,0.12)] overflow-visible md:overflow-hidden flex flex-col justify-start items-start gap-4 sm:gap-6 md:gap-8 rounded-lg">
               <div className="self-stretch flex flex-col gap-2 sm:gap-3 md:gap-4">
                 <h3 className="text-[rgba(55,50,47,0.90)] text-xl sm:text-2xl font-semibold leading-7 sm:leading-8 font-sans">
                   Team Cost Estimator
@@ -318,11 +318,11 @@ export default function PricingSection() {
             </div>
 
               {/* Quick Controls - Horizontal Layout */}
-              <div className="self-stretch flex flex-col lg:flex-row gap-3 sm:gap-4 md:gap-6 items-start lg:items-end overflow-x-auto">
+              <div className="self-stretch w-full flex flex-col lg:flex-row gap-3 sm:gap-4 md:gap-6 items-start lg:items-end overflow-visible">
                 {/* Duration Selector */}
-                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[140px] sm:min-w-0">
+                <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
                   <label className="text-[#37322F] text-xs sm:text-sm font-medium">Duration</label>
-                  <div className="flex gap-1 sm:gap-2">
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
                     {([1, 3, 6, 12] as Duration[]).map((d) => (
                       <button
                         key={d}
@@ -340,12 +340,12 @@ export default function PricingSection() {
                 </div>
 
                 {/* Work Model */}
-                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[140px] sm:min-w-0">
+                <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
                   <label className="text-[#37322F] text-xs sm:text-sm font-medium">Work Model</label>
                   <select
                     value={workModel}
                     onChange={(e) => setWorkModel(e.target.value as WorkModel)}
-                    className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                    className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000] relative z-10"
                   >
                     <option>Fixed team</option>
                     <option>Time & Materials</option>
@@ -354,12 +354,12 @@ export default function PricingSection() {
                 </div>
 
                 {/* Currency */}
-                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[100px] sm:min-w-0">
+                <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
                   <label className="text-[#37322F] text-xs sm:text-sm font-medium">Currency</label>
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value as Currency)}
-                    className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                    className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000] relative z-10"
                   >
                     <option>USD</option>
                     <option>Local</option>
@@ -367,9 +367,9 @@ export default function PricingSection() {
                 </div>
 
                 {/* Presets */}
-                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[180px] sm:min-w-0">
+                <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
                   <label className="text-[#37322F] text-xs sm:text-sm font-medium">Quick Presets</label>
-                  <div className="flex gap-1 sm:gap-2">
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
                     {PRESETS.map((preset) => (
                       <button
                         key={preset.name}
