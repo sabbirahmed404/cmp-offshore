@@ -9,34 +9,84 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
   {
-    question: "What is Brillance and who is it for?",
+    question: "What services do you provide?",
     answer:
-      "Brillance is a comprehensive billing automation platform designed for businesses that need custom contract management. It's perfect for SaaS companies, service providers, and enterprises looking to streamline their billing processes.",
+      "Managed offshore development, AI automation and agents, SaaS, ERP CRM, low code solutions, and microservices.",
   },
   {
-    question: "How does the custom contract billing work?",
+    question: "How does your pricing compare to U.S. teams?",
     answer:
-      "Our platform automatically processes your custom contracts, calculates billing amounts based on your specific terms, and generates invoices. You can set up complex pricing structures, usage-based billing, and custom billing cycles.",
+      "Typical savings of 70 to 80% vs equivalent U.S. engineering rates, depending on scope and seniority.",
   },
   {
-    question: "Can I integrate Brillance with my existing tools?",
+    question: "How do you ensure code quality and delivery?",
     answer:
-      "Yes! Brillance integrates seamlessly with popular CRM systems, accounting software, and payment processors. We support APIs and webhooks for custom integrations with your existing workflow.",
+      "U.S. grade processes: code reviews, CI/CD pipelines, automated tests, and scheduled demo milestones.",
   },
   {
-    question: "What kind of support do you provide?",
+    question: "Who will manage my project day to day?",
     answer:
-      "We offer 24/7 customer support, dedicated account managers for enterprise clients, comprehensive documentation, and onboarding assistance to help you get started quickly.",
+      "A dedicated project manager timezone aligned plus engineering leads and QA. We handle hiring and coordination.",
   },
   {
-    question: "Is my data secure with Brillance?",
+    question: "How do you handle timezones and communication?",
     answer:
-      "Absolutely. We use enterprise-grade security measures including end-to-end encryption, SOC 2 compliance, and regular security audits. Your data is stored in secure, redundant data centers.",
+      "We align overlapping hours, provide Slack or Teams channels, weekly reports, and async updates for U.S. business hours.",
   },
   {
-    question: "How do I get started with Brillance?",
+    question: "Can you work with our existing tech stack?",
     answer:
-      "Getting started is simple! Sign up for our free trial, connect your existing systems, and our onboarding team will help you set up your first custom billing workflow within 24 hours.",
+      "Yes. We integrate with most stacks including cloud, CI, databases, and LLMs. We adapt to your tooling and standards.",
+  },
+  {
+    question: "What about IP ownership and code rights?",
+    answer:
+      "All IP and deliverables are transferred to you under the contract. Full ownership is guaranteed.",
+  },
+  {
+    question: "How do you secure our data and systems?",
+    answer:
+      "Secure by default practices: encrypted transport, secrets management, access control, and optional audits and pen tests.",
+  },
+  {
+    question: "Do you comply with privacy and industry standards?",
+    answer:
+      "We can implement GDPR, SOC 2, and other compliance controls as part of scope or via add on engagements.",
+  },
+  {
+    question: "Can I start with a pilot or short engagement?",
+    answer:
+      "Yes. We recommend a 4 to 8 week pilot to validate fit, deliverables, and processes before scale up.",
+  },
+  {
+    question: "What is your hiring and retention approach?",
+    answer:
+      "We hire senior developers and provide continuous training, competitive compensation, and client embedded workflows to reduce churn.",
+  },
+  {
+    question: "How do you price projects fixed T&M or retainer?",
+    answer:
+      "We offer flexible models: fixed price for well defined scopes, T&M for evolving work, and monthly retainers for long term teams.",
+  },
+  {
+    question: "Will I have direct access to engineers?",
+    answer:
+      "Yes. You will get direct channels to engineers plus a single point of contact for coordination.",
+  },
+  {
+    question: "How long does onboarding take?",
+    answer:
+      "Onboarding typically takes 1 to 3 weeks for discovery, access, kickoff, and first sprint planning.",
+  },
+  {
+    question: "How do you handle support and maintenance?",
+    answer:
+      "We provide SLA based support plans, bug fix windows, and optional 24/7 monitoring and incident response.",
+  },
+  {
+    question: "Can you share case studies or references?",
+    answer:
+      "Absolutely. We will provide relevant case studies and client references tailored to your industry on request. Mail us at Admin@codemypixel.com",
   },
 ]
 
@@ -71,9 +121,9 @@ export default function FAQSection() {
             Frequently Asked Questions
           </div>
           <div className="w-full text-muted-foreground text-base font-normal leading-7 font-sans">
-            Explore your data, build your dashboard,
+            Get answers to common questions about our offshore
             <br className="hidden md:block" />
-            bring your team together.
+            development services and processes.
           </div>
         </div>
 

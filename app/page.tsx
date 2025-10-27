@@ -14,7 +14,6 @@ import FAQSection from "../components/faq-section"
 import PricingSection from "../components/pricing-section"
 import CTASection from "../components/cta-section"
 import FooterSection from "../components/footer-section"
-import BookingButton from "../components/booking-button"
 import CalEmbed from "../components/cal-embed"
 import AnimatedBeamDemo from "../components/animated-beam-demo"
 
@@ -41,10 +40,10 @@ export default function LandingPage() {
     const progressInterval = setInterval(() => {
       if (!mountedRef.current) return
 
-      setProgress((prev) => {
+      setProgress((prev: number) => {
         if (prev >= 100) {
           if (mountedRef.current) {
-            setActiveCard((current) => (current + 1) % 3)
+            setActiveCard((current: number) => (current + 1) % 3)
           }
           return 0
         }
@@ -196,12 +195,6 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="w-full max-w-[497px] lg:w-[497px] flex flex-col justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 relative z-10 mt-6 sm:mt-8 md:mt-10 lg:mt-12">
-                <div className="backdrop-blur-[8.25px] flex justify-start items-center gap-4">
-                  <BookingButton />
-                </div>
-              </div>
-
               <div
                 ref={calendarRef}
                 className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-0 mt-12 sm:mt-16 md:mt-20 lg:mt-24 mb-12 sm:mb-16 md:mb-20 lg:mb-24 relative z-10"
@@ -212,43 +205,18 @@ export default function LandingPage() {
                       Schedule Your Free Consultancy
                     </h2>
                     <p className="text-center text-[#605A57] text-sm sm:text-base mb-8">
-                      Pick a time that works best for you
+                      We are offering a free consultation to discuss how our services can benefit your business.
+                      <br />
+                      Pick a time that works best for you.
                     </p>
                     <CalEmbed />
                   </div>
                 </div>
               </div>
 
-              <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-0 mt-12 sm:mt-16 md:mt-20 lg:mt-24 mb-12 sm:mb-16 md:mb-20 lg:mb-24 relative z-10">
-                <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-[#E0DEDB]">
-                  <div className="p-6 sm:p-8 md:p-12">
-                    <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[#37322F] mb-2">
-                      Our Integrations
-                    </h2>
-                    <p className="text-center text-[#605A57] text-sm sm:text-base mb-8">
-                      Connect with your favorite tools seamlessly
-                    </p>
-                    <AnimatedBeamDemo />
-                  </div>
-                </div>
-              </div>
+              {/* Our Integrations section - commented out */}
 
-              <div
-                ref={calendarRef}
-                className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-0 mt-12 sm:mt-16 md:mt-20 lg:mt-24 mb-12 sm:mb-16 md:mb-20 lg:mb-24 relative z-10"
-              >
-                <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-[#E0DEDB]">
-                  <div className="p-6 sm:p-8 md:p-12">
-                    <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[#37322F] mb-2">
-                      Schedule Your Free Consultancy
-                    </h2>
-                    <p className="text-center text-[#605A57] text-sm sm:text-base mb-8">
-                      Pick a time that works best for you
-                    </p>
-                    <CalEmbed />
-                  </div>
-                </div>
-              </div>
+              {/* Schedule Your Free Consultancy section - commented out */}
 
               <div className="absolute top-[232px] sm:top-[248px] md:top-[264px] lg:top-[320px] left-1/2 transform -translate-x-1/2 z-0 pointer-events-none">
                 <img
@@ -261,56 +229,7 @@ export default function LandingPage() {
                 />
               </div>
 
-              <div className="w-full max-w-[960px] lg:w-[960px] pt-2 sm:pt-4 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4 md:px-6 lg:px-11 flex flex-col justify-center items-center gap-2 relative z-5 my-8 sm:my-12 md:my-16 lg:my-16 mb-0 lg:pb-0">
-                <div className="w-full max-w-[960px] lg:w-[960px] h-[200px] sm:h-[280px] md:h-[450px] lg:h-[695.55px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
-                  {/* Dashboard Content */}
-                  <div className="self-stretch flex-1 flex justify-start items-start">
-                    {/* Main Content */}
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="relative w-full h-full overflow-hidden">
-                        {/* Product Image 1 - Plan your schedules */}
-                        <div
-                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-                            activeCard === 0 ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-95 blur-sm"
-                          }`}
-                        >
-                          <img
-                            src="/images/design-mode/dsadsadsa.jpg.jpeg"
-                            alt="Schedules Dashboard - Customer Subscription Management"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-
-                        {/* Product Image 2 - Data to insights */}
-                        <div
-                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-                            activeCard === 1 ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-95 blur-sm"
-                          }`}
-                        >
-                          <img
-                            src="/analytics-dashboard-with-charts-graphs-and-data-vi.jpg"
-                            alt="Analytics Dashboard"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-
-                        {/* Product Image 3 - Data visualization */}
-                        <div
-                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-                            activeCard === 2 ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-95 blur-sm"
-                          }`}
-                        >
-                          <img
-                            src="/data-visualization-dashboard-with-interactive-char.jpg"
-                            alt="Data Visualization Dashboard"
-                            className="w-full h-full object-contain" // Changed from object-cover to object-contain to preserve landscape aspect ratio
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
 
               <div className="self-stretch border-t border-[#E0DEDB] border-b border-[#E0DEDB] flex justify-center items-start">
                 <div className="w-4 sm:w-6 md:w-8 lg:w-12 self-stretch relative overflow-hidden">
@@ -325,30 +244,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 px-0 sm:px-2 md:px-0 flex flex-col md:flex-row justify-center items-stretch gap-0">
-                  {/* Feature Cards */}
-                  <FeatureCard
-                    title="Plan your schedules"
-                    description="Streamline customer subscriptions and billing with automated scheduling tools."
-                    isActive={activeCard === 0}
-                    progress={activeCard === 0 ? progress : 0}
-                    onClick={() => handleCardClick(0)}
-                  />
-                  <FeatureCard
-                    title="Analytics & insights"
-                    description="Transform your business data into actionable insights with real-time analytics."
-                    isActive={activeCard === 1}
-                    progress={activeCard === 1 ? progress : 0}
-                    onClick={() => handleCardClick(1)}
-                  />
-                  <FeatureCard
-                    title="Collaborate seamlessly"
-                    description="Keep your team aligned with shared dashboards and collaborative workflows."
-                    isActive={activeCard === 2}
-                    progress={activeCard === 2 ? progress : 0}
-                    onClick={() => handleCardClick(2)}
-                  />
-                </div>
+                
 
                 <div className="w-4 sm:w-6 md:w-8 lg:w-12 self-stretch relative overflow-hidden">
                   {/* Right decorative pattern */}
@@ -363,7 +259,8 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Social Proof Section */}
+              {/* Social Proof Section - Hidden */}
+              {false && (
               <div className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center">
                 <div className="self-stretch px-4 sm:px-6 md:px-24 py-8 sm:py-12 md:py-16 border-b border-[rgba(55,50,47,0.12)] flex justify-center items-center gap-6">
                   <div className="w-full max-w-[586px] px-4 sm:px-6 py-4 sm:py-5 shadow-[0px_2px_4px_rgba(50,45,43,0.06)] overflow-hidden rounded-lg flex flex-col justify-start items-center gap-3 sm:gap-4 shadow-none">
@@ -463,6 +360,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Bento Grid Section */}
               <div className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center">
@@ -625,12 +523,12 @@ export default function LandingPage() {
 
               {/* CTA Section */}
               <CTASection />
-
-              {/* Footer Section */}
-              <FooterSection />
             </div>
           </div>
         </div>
+
+        {/* Footer Section - Full Width */}
+        <FooterSection />
       </div>
     </div>
   )

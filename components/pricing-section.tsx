@@ -1,23 +1,227 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
+
+// Types
+type Seniority = "Junior" | "Mid" | "Senior" | "Lead"
+type Duration = 1 | 3 | 6 | 12
+type WorkModel = "Fixed team" | "Time & Materials" | "Retainer"
+type Currency = "USD" | "Local"
+
+interface Role {
+  id: string
+  name: string
+  seniority: Seniority
+  quantity: number
+  monthlyRate: number
+}
+
+interface RoleTemplate {
+  name: string
+  defaultSeniority: Seniority
+}
+
+// Rate structure (example rates - editable)
+const RATES = {
+  BD: {
+    Junior: 400,
+    Mid: 800,
+    Senior: 1500,
+    Lead: 2500,
+  },
+  US: {
+    Junior: 3000,
+    Mid: 7000,
+    Senior: 12000,
+    Lead: 20000,
+  },
+}
+
+// Default role templates
+const ROLE_TEMPLATES: RoleTemplate[] = [
+  { name: "Backend Engineer", defaultSeniority: "Mid" },
+  { name: "Frontend Engineer", defaultSeniority: "Mid" },
+  { name: "Full-stack Engineer", defaultSeniority: "Senior" },
+  { name: "Mobile Engineer", defaultSeniority: "Mid" },
+  { name: "Cloud Architect / DevOps", defaultSeniority: "Senior" },
+  { name: "QA / Automation Engineer", defaultSeniority: "Mid" },
+  { name: "UI/UX Designer", defaultSeniority: "Mid" },
+  { name: "Product Manager", defaultSeniority: "Senior" },
+  { name: "Data Scientist / ML Engineer", defaultSeniority: "Senior" },
+  { name: "AI Engineer / LLM Specialist", defaultSeniority: "Senior" },
+  { name: "Security Engineer", defaultSeniority: "Senior" },
+  { name: "Technical Writer / Docs", defaultSeniority: "Mid" },
+]
+
+// Preset configurations
+const PRESETS = [
+  {
+    name: "MVP Team",
+    roles: [
+      { name: "Backend Engineer", seniority: "Senior" as Seniority, quantity: 1 },
+      { name: "Frontend Engineer", seniority: "Mid" as Seniority, quantity: 1 },
+      { name: "UI/UX Designer", seniority: "Mid" as Seniority, quantity: 1 },
+    ],
+  },
+  {
+    name: "Scale Team",
+    roles: [
+      { name: "Backend Engineer", seniority: "Senior" as Seniority, quantity: 2 },
+      { name: "Frontend Engineer", seniority: "Mid" as Seniority, quantity: 2 },
+      { name: "Cloud Architect / DevOps", seniority: "Senior" as Seniority, quantity: 1 },
+      { name: "QA / Automation Engineer", seniority: "Mid" as Seniority, quantity: 1 },
+      { name: "Product Manager", seniority: "Senior" as Seniority, quantity: 1 },
+    ],
+  },
+]
+
+const CHART_COLORS = ["#FF8000", "#37322F", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F3F4F6", "#F9FAFB"]
+
+// Custom label renderer to ensure readable colors on dark background
+const renderPieLabel = (props: any) => {
+  const { x, y, index, payload } = props
+  const sliceColor = CHART_COLORS[index % CHART_COLORS.length]
+  // Default to white for readability on dark background
+  let labelColor = "#FFFFFF"
+  // If the slice is the orange one, use orange for the label
+  if (sliceColor.toLowerCase() === "#ff8000") {
+    labelColor = "#FF8000"
+  }
+  // For lighter gray slices, use a light gray label
+  const graySet = new Set(["#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb", "#f3f4f6", "#f9fafb"])
+  if (graySet.has(sliceColor.toLowerCase())) {
+    labelColor = "#D1D5DB"
+  }
+  const name = (payload?.name || "").split(" ")[0]
+  return (
+    <text x={x} y={y} fill={labelColor} textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600}>
+      {name}
+    </text>
+  )
+}
 
 export default function PricingSection() {
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annually">("annually")
+  const [duration, setDuration] = useState<Duration>(6)
+  const [workModel, setWorkModel] = useState<WorkModel>("Fixed team")
+  const [currency, setCurrency] = useState<Currency>("USD")
+  const [showUSComparison, setShowUSComparison] = useState(true)
+  const [roles, setRoles] = useState<Role[]>([])
+  const [customRoleName, setCustomRoleName] = useState("")
+  const [showAddRole, setShowAddRole] = useState(false)
 
-  const pricing = {
-    starter: {
-      monthly: 0,
-      annually: 0,
-    },
-    professional: {
-      monthly: 20,
-      annually: 16, // 20% discount for annual
-    },
-    enterprise: {
-      monthly: 200,
-      annually: 160, // 20% discount for annual
-    },
+  // Calculate costs
+  const calculations = useMemo(() => {
+    const monthlyCost = roles.reduce((sum, role) => {
+      return sum + role.quantity * role.monthlyRate
+    }, 0)
+
+    const totalCost = monthlyCost * duration
+
+    const usEquivalentMonthlyCost = roles.reduce((sum, role) => {
+      const usRate = RATES.US[role.seniority]
+      return sum + role.quantity * usRate
+    }, 0)
+
+    const usEquivalentTotalCost = usEquivalentMonthlyCost * duration
+
+    const savings = usEquivalentTotalCost > 0 ? ((usEquivalentTotalCost - totalCost) / usEquivalentTotalCost) * 100 : 0
+
+    return {
+      monthlyCost,
+      totalCost,
+      usEquivalentMonthlyCost,
+      usEquivalentTotalCost,
+      savings,
+    }
+  }, [roles, duration])
+
+  // Pie chart data
+  const pieChartData = useMemo(() => {
+    return roles
+      .filter((role) => role.quantity > 0)
+      .map((role) => ({
+        name: role.name,
+        value: role.quantity * role.monthlyRate,
+      }))
+  }, [roles])
+
+  const addRole = (template: RoleTemplate) => {
+    const newRole: Role = {
+      id: `${template.name}-${Date.now()}`,
+      name: template.name,
+      seniority: template.defaultSeniority,
+      quantity: 1,
+      monthlyRate: RATES.BD[template.defaultSeniority],
+    }
+    setRoles([...roles, newRole])
+  }
+
+  const addCustomRole = () => {
+    if (!customRoleName.trim()) return
+    const newRole: Role = {
+      id: `custom-${Date.now()}`,
+      name: customRoleName,
+      seniority: "Mid",
+      quantity: 1,
+      monthlyRate: RATES.BD.Mid,
+    }
+    setRoles([...roles, newRole])
+    setCustomRoleName("")
+    setShowAddRole(false)
+  }
+
+  const updateRole = (id: string, updates: Partial<Role>) => {
+    setRoles(
+      roles.map((role) => {
+        if (role.id === id) {
+          const updatedRole = { ...role, ...updates }
+          // Update rate if seniority changed
+          if (updates.seniority) {
+            updatedRole.monthlyRate = RATES.BD[updates.seniority]
+          }
+          return updatedRole
+        }
+        return role
+      })
+    )
+  }
+
+  const removeRole = (id: string) => {
+    setRoles(roles.filter((role) => role.id !== id))
+  }
+
+  const applyPreset = (preset: typeof PRESETS[0]) => {
+    const newRoles = preset.roles.map((r) => ({
+      id: `${r.name}-${Date.now()}-${Math.random()}`,
+      name: r.name,
+      seniority: r.seniority,
+      quantity: r.quantity,
+      monthlyRate: RATES.BD[r.seniority],
+    }))
+    setRoles(newRoles)
+  }
+
+  const exportPDF = () => {
+    alert("PDF export functionality would be implemented here")
+  }
+
+  const exportCSV = () => {
+    const csvContent = [
+      ["Role", "Seniority", "Quantity", "Monthly Rate", "Total"],
+      ...roles.map((r) => [r.name, r.seniority, r.quantity, r.monthlyRate, r.quantity * r.monthlyRate]),
+      ["", "", "", "Total Monthly:", calculations.monthlyCost],
+      ["", "", "", `Total ${duration} months:`, calculations.totalCost],
+    ]
+      .map((row) => row.join(","))
+      .join("\n")
+
+    const blob = new Blob([csvContent], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "team-estimate.csv"
+    a.click()
   }
 
   return (
@@ -45,64 +249,13 @@ export default function PricingSection() {
 
           {/* Title */}
           <div className="self-stretch text-center flex justify-center flex-col text-[#49423D] text-3xl md:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-            Choose the perfect plan for your business
+            Transparent Pricing & Team Estimator
           </div>
 
           {/* Description */}
           <div className="self-stretch text-center text-[#605A57] text-base font-normal leading-7 font-sans">
-            Scale your operations with flexible pricing that grows with your team.
-            <br />
-            Start free, upgrade when you're ready.
+            Start with a free strategy session or build your custom team estimate with transparent, editable pricing.
           </div>
-        </div>
-      </div>
-
-      {/* Billing Toggle Section */}
-      <div className="self-stretch px-6 md:px-16 py-9 relative flex justify-center items-center gap-4">
-        {/* Horizontal line */}
-        <div className="w-full max-w-[1060px] h-0 absolute left-1/2 transform -translate-x-1/2 top-[63px] border-t border-[rgba(55,50,47,0.12)] z-0"></div>
-
-        {/* Toggle Container */}
-        <div className="p-3 relative bg-[rgba(55,50,47,0.03)] border border-[rgba(55,50,47,0.02)] backdrop-blur-[44px] backdrop-saturate-150 backdrop-brightness-110 flex justify-center items-center rounded-lg z-20 before:absolute before:inset-0 before:bg-white before:opacity-60 before:rounded-lg before:-z-10">
-          <div className="p-[2px] bg-[rgba(55,50,47,0.10)] shadow-[0px_1px_0px_white] rounded-[99px] border-[0.5px] border-[rgba(55,50,47,0.08)] flex justify-center items-center gap-[2px] relative">
-            <div
-              className={`absolute top-[2px] w-[calc(50%-1px)] h-[calc(100%-4px)] bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.08)] rounded-[99px] transition-all duration-300 ease-in-out ${
-                billingPeriod === "annually" ? "left-[2px]" : "right-[2px]"
-              }`}
-            />
-
-            <button
-              onClick={() => setBillingPeriod("annually")}
-              className="px-4 py-1 rounded-[99px] flex justify-center items-center gap-2 transition-colors duration-300 relative z-10 flex-1"
-            >
-              <div
-                className={`text-[13px] font-medium leading-5 font-sans transition-colors duration-300 ${
-                  billingPeriod === "annually" ? "text-[#37322F]" : "text-[#6B7280]"
-                }`}
-              >
-                Annually
-              </div>
-            </button>
-
-            <button
-              onClick={() => setBillingPeriod("monthly")}
-              className="px-4 py-1 rounded-[99px] flex justify-center items-center gap-2 transition-colors duration-300 relative z-10 flex-1"
-            >
-              <div
-                className={`text-[13px] font-medium leading-5 font-sans transition-colors duration-300 ${
-                  billingPeriod === "monthly" ? "text-[#37322F]" : "text-[#6B7280]"
-                }`}
-              >
-                Monthly
-              </div>
-            </button>
-          </div>
-
-          {/* Decorative dots */}
-          <div className="w-[3px] h-[3px] absolute left-[5px] top-[5.25px] bg-[rgba(55,50,47,0.10)] shadow-[0px_0px_0.5px_rgba(0,0,0,0.12)] rounded-[99px]"></div>
-          <div className="w-[3px] h-[3px] absolute right-[5px] top-[5.25px] bg-[rgba(55,50,47,0.10)] shadow-[0px_0px_0.5px_rgba(0,0,0,0.12)] rounded-[99px]"></div>
-          <div className="w-[3px] h-[3px] absolute left-[5px] bottom-[5.25px] bg-[rgba(55,50,47,0.10)] shadow-[0px_0px_0.5px_rgba(0,0,0,0.12)] rounded-[99px]"></div>
-          <div className="w-[3px] h-[3px] absolute right-[5px] bottom-[5.25px] bg-[rgba(55,50,47,0.10)] shadow-[0px_0px_0.5px_rgba(0,0,0,0.12)] rounded-[99px]"></div>
         </div>
       </div>
 
@@ -121,251 +274,429 @@ export default function PricingSection() {
             </div>
           </div>
 
-          {/* Pricing Cards Container */}
-          <div className="flex-1 flex flex-col md:flex-row justify-center items-center gap-6 py-12 md:py-0">
-            {/* Starter Plan */}
-            <div className="flex-1 max-w-full md:max-w-none self-stretch px-6 py-5 border border-[rgba(50,45,43,0.12)] border-[#E0DEDB] overflow-hidden flex flex-col justify-start items-start gap-12 bg-[rgba(255,255,255,0)]">
-              {/* Plan Header */}
-              <div className="self-stretch flex flex-col justify-start items-center gap-9">
-                <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                  <div className="text-[rgba(55,50,47,0.90)] text-lg font-medium leading-7 font-sans">Starter</div>
-                  <div className="w-full max-w-[242px] text-[rgba(41,37,35,0.70)] text-sm font-normal leading-5 font-sans">
-                    Perfect for individuals and small teams getting started.
+          {/* Cards Container - Vertical Stack */}
+          <div className="flex-1 flex flex-col justify-center items-center gap-6 py-12 px-6 max-w-7xl w-full">
+            {/* Free Strategy & Consultation Card - Full Width */}
+            <div className="w-full px-8 py-8 border border-[rgba(50,45,43,0.12)] border-[#E0DEDB] overflow-hidden bg-white rounded-lg">
+              <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex-1 flex flex-col justify-start items-start gap-4">
+                  {/* Free Badge */}
+                  <div className="px-3 py-1 bg-[#FF8000] rounded-full">
+                    <span className="text-white text-xs font-semibold uppercase tracking-wide">Free</span>
+                </div>
+
+                  <div className="flex flex-col justify-start items-start gap-2">
+                    <h3 className="text-[rgba(55,50,47,0.90)] text-2xl font-semibold leading-8 font-sans">
+                      Free Strategy & Consultation
+                    </h3>
+                    <p className="text-[rgba(41,37,35,0.70)] text-base font-normal leading-6 font-sans">
+                      30 minute planning session — hiring strategy, roadmap, and delivery plan at no charge.
+                    </p>
                   </div>
                 </div>
 
-                <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                  <div className="flex flex-col justify-start items-start gap-1">
-                    <div className="relative h-[60px] flex items-center text-[#37322F] text-5xl font-medium leading-[60px] font-serif">
-                      <span className="invisible">${pricing.starter[billingPeriod]}</span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "annually" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "annually" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "annually" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "annually"}
-                      >
-                        ${pricing.starter.annually}
-                      </span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "monthly" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "monthly" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "monthly" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "monthly"}
-                      >
-                        ${pricing.starter.monthly}
-                      </span>
-                    </div>
-                    <div className="text-[#847971] text-sm font-medium font-sans">
-                      per {billingPeriod === "monthly" ? "month" : "year"}, per user.
+                <div className="flex flex-col gap-3 md:min-w-[280px]">
+                  <button className="w-full px-6 py-3 bg-[#37322F] hover:bg-[#49423D] transition-colors shadow-[0px_2px_4px_rgba(55,50,47,0.12)] rounded-[99px] flex justify-center items-center">
+                    <span className="text-[#FBFAF9] text-sm font-medium font-sans">Book Free Consultation</span>
+                  </button>
+                  <p className="text-center text-[#847971] text-xs font-normal leading-4 font-sans">
+                    NDA available · No obligation
+                  </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="self-stretch px-4 py-[10px] relative bg-[#37322F] shadow-[0px_2px_4px_rgba(55,50,47,0.12)] overflow-hidden rounded-[99px] flex justify-center items-center">
-                  <div className="w-full h-[41px] absolute left-0 top-[-0.5px] bg-gradient-to-b from-[rgba(255,255,255,0.20)] to-[rgba(0,0,0,0.10)] mix-blend-multiply"></div>
-                  <div className="max-w-[108px] flex justify-center flex-col text-[#FBFAF9] text-[13px] font-medium leading-5 font-sans">
-                    Start for free
+            {/* Team Cost Estimator Card - Full Width */}
+            <div className="w-full px-8 py-8 bg-[#FAFAFA] border border-[rgba(50,45,43,0.12)] overflow-hidden flex flex-col justify-start items-start gap-8 rounded-lg">
+              <div className="self-stretch flex flex-col gap-4">
+                <h3 className="text-[rgba(55,50,47,0.90)] text-2xl font-semibold leading-8 font-sans">
+                  Team Cost Estimator
+                </h3>
+                <p className="text-[rgba(41,37,35,0.70)] text-sm font-normal leading-5 font-sans">
+                  Configure roles, seniority, and duration to view instant, transparent cost estimates.
+                </p>
+            </div>
+
+              {/* Quick Controls - Horizontal Layout */}
+              <div className="self-stretch flex flex-col lg:flex-row gap-6 items-start lg:items-end">
+                {/* Duration Selector */}
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-[#37322F] text-sm font-medium">Duration</label>
+                  <div className="flex gap-2">
+                    {([1, 3, 6, 12] as Duration[]).map((d) => (
+                      <button
+                        key={d}
+                        onClick={() => setDuration(d)}
+                        className={`flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                          duration === d
+                            ? "bg-[#37322F] text-white border-[#37322F]"
+                            : "bg-white text-[#605A57] border-[#E0DEDB] hover:border-[#37322F]"
+                        }`}
+                      >
+                        {d} {d === 1 ? "mo" : "mos"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Work Model */}
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-[#37322F] text-sm font-medium">Work Model</label>
+                  <select
+                    value={workModel}
+                    onChange={(e) => setWorkModel(e.target.value as WorkModel)}
+                    className="w-full px-3 py-2 bg-white border border-[#E0DEDB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                  >
+                    <option>Fixed team</option>
+                    <option>Time & Materials</option>
+                    <option>Retainer</option>
+                  </select>
+                </div>
+
+                {/* Currency */}
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-[#37322F] text-sm font-medium">Currency</label>
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value as Currency)}
+                    className="w-full px-3 py-2 bg-white border border-[#E0DEDB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                  >
+                    <option>USD</option>
+                    <option>Local</option>
+                  </select>
+                </div>
+
+                {/* Presets */}
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-[#37322F] text-sm font-medium">Quick Presets</label>
+                  <div className="flex gap-2">
+                    {PRESETS.map((preset) => (
+                      <button
+                        key={preset.name}
+                        onClick={() => applyPreset(preset)}
+                        className="flex-1 px-3 py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs font-medium text-[#605A57] hover:border-[#FF8000] hover:text-[#FF8000] transition-all"
+                      >
+                        {preset.name}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                {[
-                  "Up to 3 projects",
-                  "Basic documentation tools",
-                  "Community support",
-                  "Standard templates",
-                  "Basic analytics",
-                ].map((feature, index) => (
-                  <div key={index} className="self-stretch flex justify-start items-center gap-[13px]">
-                    <div className="w-4 h-4 relative flex items-center justify-center">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Role Chips */}
+              {roles.length > 0 && (
+                <div className="self-stretch flex flex-wrap gap-2">
+                  {roles.map((role) => (
+                    <div
+                      key={role.id}
+                      className="px-3 py-1.5 bg-white border border-[#E0DEDB] rounded-full flex items-center gap-2"
+                    >
+                      <span className="text-xs font-medium text-[#37322F]">
+                        {role.quantity}x {role.name} ({role.seniority})
+                      </span>
+                      <button
+                        onClick={() => removeRole(role.id)}
+                        className="text-[#9CA3AF] hover:text-[#37322F] transition-colors"
+                        aria-label={`Remove ${role.name}`}
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 14 14"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
                         <path
-                          d="M10 3L4.5 8.5L2 6"
-                          stroke="#9CA3AF"
+                            d="M10.5 3.5L3.5 10.5M3.5 3.5L10.5 10.5"
+                            stroke="currentColor"
                           strokeWidth="1.5"
                           strokeLinecap="round"
-                          strokeLinejoin="round"
                         />
                       </svg>
+                      </button>
                     </div>
-                    <div className="flex-1 text-[rgba(55,50,47,0.80)] text-[12.5px] font-normal leading-5 font-sans">
-                      {feature}
+                  ))}
+                </div>
+              )}
+
+              {/* Role Selection */}
+              <div className="self-stretch flex flex-col gap-3">
+                <label className="text-[#37322F] text-sm font-medium">Add Team Members</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                  {ROLE_TEMPLATES.map((template) => (
+                    <button
+                      key={template.name}
+                      onClick={() => addRole(template)}
+                      className="px-3 py-2.5 bg-white border border-[#E0DEDB] rounded-lg text-left text-xs text-[#37322F] hover:border-[#FF8000] hover:bg-[#FFF8F0] transition-all group"
+                    >
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-medium truncate">{template.name}</span>
+                        <span className="text-[#FF8000] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">+</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* More Roles Dropdown */}
+                {!showAddRole && (
+                  <button
+                    onClick={() => setShowAddRole(true)}
+                    className="w-full px-4 py-2.5 border-2 border-dashed border-[#D1D5DB] rounded-lg text-sm font-medium text-[#6B7280] hover:border-[#FF8000] hover:text-[#FF8000] transition-all"
+                  >
+                    + Add Custom Role
+                  </button>
+                )}
+
+                {showAddRole && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={customRoleName}
+                      onChange={(e) => setCustomRoleName(e.target.value)}
+                      placeholder="Enter role name..."
+                      className="flex-1 px-3 py-2 bg-white border border-[#E0DEDB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                      onKeyDown={(e) => e.key === "Enter" && addCustomRole()}
+                    />
+                    <button
+                      onClick={addCustomRole}
+                      className="px-4 py-2 bg-[#FF8000] text-white rounded-lg text-sm font-medium hover:bg-[#E67300] transition-colors"
+                    >
+                      Add
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowAddRole(false)
+                        setCustomRoleName("")
+                      }}
+                      className="px-4 py-2 bg-white border border-[#E0DEDB] text-[#6B7280] rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Role Cards - More Compact */}
+              {roles.length > 0 && (
+                <div className="self-stretch flex flex-col gap-3">
+                  <label className="text-[#37322F] text-sm font-medium">Team Configuration</label>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2">
+                    {roles.map((role) => (
+                      <div
+                        key={role.id}
+                        className="p-3 bg-white border border-[#E0DEDB] rounded-lg flex items-center gap-3"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-xs font-semibold text-[#37322F] truncate">{role.name}</h4>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {/* Seniority Dropdown */}
+                          <select
+                            value={role.seniority}
+                            onChange={(e) => updateRole(role.id, { seniority: e.target.value as Seniority })}
+                            className="px-2 py-1 bg-white border border-[#E0DEDB] rounded text-xs focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                          >
+                            <option>Junior</option>
+                            <option>Mid</option>
+                            <option>Senior</option>
+                            <option>Lead</option>
+                          </select>
+
+                          {/* Quantity Stepper */}
+                          <div className="flex items-center gap-0.5 bg-white border border-[#E0DEDB] rounded">
+                            <button
+                              onClick={() => updateRole(role.id, { quantity: Math.max(0, role.quantity - 1) })}
+                              className="px-2 py-1 text-[#6B7280] hover:text-[#37322F] hover:bg-gray-50 transition-colors text-xs"
+                              aria-label="Decrease quantity"
+                            >
+                              −
+                            </button>
+                            <span className="px-2 text-xs font-medium text-[#37322F] min-w-[1.5ch] text-center">
+                              {role.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateRole(role.id, { quantity: Math.min(20, role.quantity + 1) })}
+                              className="px-2 py-1 text-[#6B7280] hover:text-[#37322F] hover:bg-gray-50 transition-colors text-xs"
+                              aria-label="Increase quantity"
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          {/* Monthly Rate */}
+                          <div className="flex items-center gap-0.5">
+                            <span className="text-xs text-[#6B7280]">$</span>
+                            <input
+                              type="number"
+                              value={role.monthlyRate}
+                              onChange={(e) =>
+                                updateRole(role.id, { monthlyRate: Math.max(0, parseInt(e.target.value) || 0) })
+                              }
+                              className="w-16 px-1 py-1 bg-white border border-[#E0DEDB] rounded text-xs text-right focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                            />
+                            <button
+                              className="text-[#9CA3AF] hover:text-[#37322F]"
+                              title="Example rate — click to edit"
+                            >
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 14 14"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1" />
+                                <path d="M7 10V7M7 4V4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                              </svg>
+                            </button>
+                    </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+              )}
 
-            {/* Professional Plan (Featured) */}
-            <div className="flex-1 max-w-full md:max-w-none self-stretch px-6 py-5 bg-[#37322F] border border-[rgba(50,45,43,0.12)] border-[rgba(55,50,47,0.12)] overflow-hidden flex flex-col justify-start items-start gap-12">
-              {/* Plan Header */}
-              <div className="self-stretch flex flex-col justify-start items-center gap-9">
-                <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                  <div className="text-[#FBFAF9] text-lg font-medium leading-7 font-sans">Professional</div>
-                  <div className="w-full max-w-[242px] text-[#B2AEA9] text-sm font-normal leading-5 font-sans">
-                    Advanced features for growing teams and businesses.
+              {/* Live Summary Panel - Larger */}
+              {roles.length > 0 && (
+                <div className="self-stretch p-8 bg-gradient-to-br from-[#37322F] to-[#49423D] rounded-lg flex flex-col lg:flex-row gap-8 text-white">
+                  {/* Cost Summary - Expanded */}
+                  <div className="flex-1 flex flex-col gap-6">
+                    <h4 className="text-2xl font-bold">Cost Summary</h4>
+                    <div className="flex flex-col gap-5">
+                      <div className="flex justify-between items-baseline p-4 bg-[rgba(255,255,255,0.05)] rounded-lg">
+                        <span className="text-base text-[#D2C6BF]">Monthly Cost:</span>
+                        <span className="text-3xl font-bold">${calculations.monthlyCost.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-baseline p-5 bg-[rgba(255,128,0,0.1)] rounded-lg border-2 border-[#FF8000]">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-lg text-[#D2C6BF]">Total for {duration} months:</span>
+                          <span className="text-xs text-[#B2AEA9]">{duration} × ${calculations.monthlyCost.toLocaleString()}/mo</span>
                   </div>
+                        <span className="text-4xl font-bold text-[#FF8000]">
+                          ${calculations.totalCost.toLocaleString()}
+                        </span>
                 </div>
 
-                <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                  <div className="flex flex-col justify-start items-start gap-1">
-                    <div className="relative h-[60px] flex items-center text-[#F0EFEE] text-5xl font-medium leading-[60px] font-serif">
-                      <span className="invisible">${pricing.professional[billingPeriod]}</span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "annually" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "annually" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "annually" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "annually"}
-                      >
-                        ${pricing.professional.annually}
+                      {showUSComparison && calculations.usEquivalentMonthlyCost > 0 && (
+                        <>
+                          <div className="h-px bg-[rgba(255,255,255,0.1)] my-2"></div>
+                          <div className="flex justify-between items-baseline p-4 bg-[rgba(255,255,255,0.03)] rounded-lg">
+                            <span className="text-base text-[#D2C6BF]">US Equivalent:</span>
+                            <span className="text-2xl text-[#D2C6BF] line-through">
+                              ${calculations.usEquivalentTotalCost.toLocaleString()}
                       </span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "monthly" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "monthly" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "monthly" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "monthly"}
-                      >
-                        ${pricing.professional.monthly}
-                      </span>
-                    </div>
-                    <div className="text-[#D2C6BF] text-sm font-medium font-sans">
-                      per {billingPeriod === "monthly" ? "month" : "year"}, per user.
-                    </div>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className="self-stretch px-4 py-[10px] relative bg-[#FBFAF9] shadow-[0px_2px_4px_rgba(55,50,47,0.12)] overflow-hidden rounded-[99px] flex justify-center items-center">
-                  <div className="w-full h-[41px] absolute left-0 top-[-0.5px] bg-gradient-to-b from-[rgba(255,255,255,0)] to-[rgba(0,0,0,0.10)] mix-blend-multiply"></div>
-                  <div className="max-w-[108px] flex justify-center flex-col text-[#37322F] text-[13px] font-medium leading-5 font-sans">
-                    Get started
-                  </div>
-                </div>
-              </div>
-
-              <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                {[
-                  "Unlimited projects",
-                  "Advanced documentation tools",
-                  "Priority support",
-                  "Custom templates",
-                  "Advanced analytics",
-                  "Team collaboration",
-                  "API access",
-                  "Custom integrations",
-                ].map((feature, index) => (
-                  <div key={index} className="self-stretch flex justify-start items-center gap-[13px]">
-                    <div className="w-4 h-4 relative flex items-center justify-center">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M10 3L4.5 8.5L2 6"
-                          stroke="#FF8000"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1 text-[#F0EFEE] text-[12.5px] font-normal leading-5 font-sans">{feature}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Enterprise Plan */}
-            <div className="flex-1 max-w-full md:max-w-none self-stretch px-6 py-5 bg-white border border-[#E0DEDB] overflow-hidden flex flex-col justify-start items-start gap-12">
-              {/* Plan Header */}
-              <div className="self-stretch flex flex-col justify-start items-center gap-9">
-                <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                  <div className="text-[rgba(55,50,47,0.90)] text-lg font-medium leading-7 font-sans">Enterprise</div>
-                  <div className="w-full max-w-[242px] text-[rgba(41,37,35,0.70)] text-sm font-normal leading-5 font-sans">
-                    Complete solution for large organizations and enterprises.
-                  </div>
-                </div>
-
-                <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                  <div className="flex flex-col justify-start items-start gap-1">
-                    <div className="relative h-[60px] flex items-center text-[#37322F] text-5xl font-medium leading-[60px] font-serif">
-                      <span className="invisible">${pricing.enterprise[billingPeriod]}</span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "annually" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "annually" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "annually" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "annually"}
-                      >
-                        ${pricing.enterprise.annually}
-                      </span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "monthly" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "monthly" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "monthly" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "monthly"}
-                      >
-                        ${pricing.enterprise.monthly}
+                          </div>
+                          <div className="p-5 bg-[rgba(255,128,0,0.2)] rounded-lg border-2 border-[rgba(255,128,0,0.4)]">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-lg font-semibold">You save:</span>
+                              <span className="text-3xl font-bold text-[#FF8000]">
+                                ~{Math.round(calculations.savings)}%
                       </span>
                     </div>
-                    <div className="text-[#847971] text-sm font-medium font-sans">
-                      per {billingPeriod === "monthly" ? "month" : "year"}, per user.
+                            <div className="h-3 bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-[#FF8000] transition-all duration-500"
+                                style={{ width: `${calculations.savings}%` }}
+                              ></div>
+                            </div>
+                            <div className="mt-2 text-xs text-[#D2C6BF]">
+                              That's ${(calculations.usEquivalentTotalCost - calculations.totalCost).toLocaleString()} in savings
                     </div>
                   </div>
+                        </>
+                      )}
                 </div>
 
-                <div className="self-stretch px-4 py-[10px] relative bg-[#37322F] shadow-[0px_2px_4px_rgba(55,50,47,0.12)] overflow-hidden rounded-[99px] flex justify-center items-center">
-                  <div className="w-full h-[41px] absolute left-0 top-[-0.5px] bg-gradient-to-b from-[rgba(255,255,255,0.20)] to-[rgba(0,0,0,0.10)] mix-blend-multiply"></div>
-                  <div className="max-w-[108px] flex justify-center flex-col text-[#FBFAF9] text-[13px] font-medium leading-5 font-sans">
-                    Contact sales
+                    {/* Compare Toggle */}
+                    <label className="flex items-center gap-2 cursor-pointer p-3 bg-[rgba(255,255,255,0.05)] rounded-lg hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={showUSComparison}
+                        onChange={(e) => setShowUSComparison(e.target.checked)}
+                        className="w-5 h-5 accent-[#FF8000]"
+                      />
+                      <span className="text-base text-[#D2C6BF]">Show US equivalent comparison</span>
+                    </label>
                   </div>
-                </div>
-              </div>
 
-              <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                {[
-                  "Everything in Professional",
-                  "Dedicated account manager",
-                  "24/7 phone support",
-                  "Custom onboarding",
-                  "Advanced security features",
-                  "SSO integration",
-                  "Custom contracts",
-                  "White-label options",
-                ].map((feature, index) => (
-                  <div key={index} className="self-stretch flex justify-start items-center gap-[13px]">
-                    <div className="w-4 h-4 relative flex items-center justify-center">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M10 3L4.5 8.5L2 6"
-                          stroke="#9CA3AF"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1 text-[rgba(55,50,47,0.80)] text-[12.5px] font-normal leading-5 font-sans">
-                      {feature}
+                  {/* Pie Chart - Larger */}
+                  {pieChartData.length > 0 && (
+                    <div className="flex-1 flex flex-col gap-4 min-h-[350px]">
+                      <h4 className="text-xl font-bold text-white">Cost Breakdown by Role</h4>
+                      <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                        <PieChart>
+                          <Pie
+                            data={pieChartData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={60}
+                            outerRadius={100}
+                            paddingAngle={2}
+                            dataKey="value"
+                            label={renderPieLabel}
+                            labelLine={false}
+                          >
+                            {pieChartData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            formatter={(value: number) => [`$${value.toLocaleString()}`, "Monthly Cost"]}
+                            contentStyle={{
+                              backgroundColor: "#37322F",
+                              border: "1px solid rgba(255,255,255,0.2)",
+                              borderRadius: "8px",
+                              color: "#FFFFFF",
+                              padding: "12px",
+                            }}
+                            labelStyle={{
+                              color: "#FFFFFF",
+                              fontWeight: "600",
+                              marginBottom: "4px",
+                            }}
+                            itemStyle={{
+                              color: "#FFFFFF",
+                            }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                </div>
+                  )}
+              </div>
+              )}
+
+              {/* Action Buttons - hidden per request */}
+
+              {/* CTA for empty state */}
+              {roles.length === 0 && (
+                <div className="self-stretch p-8 border-2 border-dashed border-[#D1D5DB] rounded-lg flex flex-col items-center justify-center gap-3 text-center">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="48" height="48" rx="24" fill="#F3F4F6" />
+                    <path
+                      d="M24 18V30M18 24H30"
+                      stroke="#9CA3AF"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div>
+                    <h4 className="text-[#37322F] font-semibold mb-1">Build Your Team</h4>
+                    <p className="text-sm text-[#6B7280]">
+                      Add roles above or try a preset to see instant cost estimates
+                    </p>
                     </div>
                   </div>
-                ))}
-              </div>
+              )}
+
+              {/* Bottom CTA - hidden per request */}
+
+              {/* Footer Microcopy */}
+              <p className="text-[#9CA3AF] text-xs leading-5 text-center">
+                All numbers are estimates. Final pricing depends on scope, SLAs, and seniority. NDA available.
+              </p>
             </div>
           </div>
 

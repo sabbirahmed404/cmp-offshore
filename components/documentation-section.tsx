@@ -39,8 +39,8 @@ export default function DocumentationSection() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveCard((prev) => (prev + 1) % cards.length)
-      setAnimationKey((prev) => prev + 1)
+      setActiveCard((prev: number) => (prev + 1) % cards.length)
+      setAnimationKey((prev: number) => prev + 1)
     }, 5000)
 
     return () => clearInterval(interval)
@@ -48,7 +48,7 @@ export default function DocumentationSection() {
 
   const handleCardClick = (index: number) => {
     setActiveCard(index)
-    setAnimationKey((prev) => prev + 1)
+    setAnimationKey((prev: number) => prev + 1)
   }
 
   return (

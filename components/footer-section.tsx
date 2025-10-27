@@ -30,7 +30,7 @@ export default function FooterSection() {
         </div>
 
         {/* Right Section - Get In Touch */}
-        <div className="flex-1 flex flex-col justify-start items-start gap-8">
+        <div className="flex-1 flex flex-col justify-start items-start gap-8 lg:ml-[730px]">
           <div className="flex flex-col justify-start items-start gap-6 w-full">
             <h3 className="text-lg sm:text-xl font-semibold text-white font-sans">Get In Touch</h3>
 

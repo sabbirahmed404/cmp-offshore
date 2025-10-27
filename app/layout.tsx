@@ -22,7 +22,11 @@ export const metadata: Metadata = {
   title: "CodeMyPixel - Effortless Custom Contract Billing",
   description:
     "Streamline your billing process with seamless automation for every custom contract, tailored by CodeMyPixel.",
-    generator: 'v0.app'
+    generator: 'v0.app',
+  icons: {
+    icon: '/codemypixel-logo.png',
+    apple: '/codemypixel-logo.png',
+  }
 }
 
 export default function RootLayout({
