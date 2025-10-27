@@ -32,6 +32,7 @@ function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
 export default function LandingPage() {
   const [activeCard, setActiveCard] = useState(0)
   const [progress, setProgress] = useState(0)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const mountedRef = useRef(true)
   const calendarRef = useRef<HTMLDivElement>(null)
   const pricingRef = useRef<HTMLDivElement>(null)
@@ -63,6 +64,24 @@ export default function LandingPage() {
     }
   }, [])
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (mobileMenuOpen && !target.closest('.mobile-menu-container')) {
+        setMobileMenuOpen(false)
+      }
+    }
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [mobileMenuOpen])
+
   const handleCardClick = (index: number) => {
     if (!mountedRef.current) return
     setActiveCard(index)
@@ -75,6 +94,14 @@ export default function LandingPage() {
 
   const scrollToPricing = () => {
     pricingRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  const scrollToPricingSection = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const element = document.getElementById('pricing-section')
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" })
+    }
   }
 
   const getDashboardContent = () => {
@@ -101,21 +128,29 @@ export default function LandingPage() {
           {/* Right vertical line */}
           <div className="w-[1px] h-full absolute right-4 sm:right-6 md:right-8 lg:right-0 top-0 bg-[rgba(55,50,47,0.12)] shadow-[1px_0px_0px_white] z-0"></div>
 
-          <div className="self-stretch pt-[9px] overflow-hidden border-b border-[rgba(55,50,47,0.06)] flex flex-col justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-[66px] relative z-10">
+          <div className="self-stretch pt-[19px] sm:pt-[9px] overflow-hidden border-b border-[rgba(55,50,47,0.06)] flex flex-col justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-[66px] relative z-10">
             {/* Navigation */}
-            <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-6 sm:px-8 md:px-12 lg:px-0">
+            <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-[10px] sm:top-0 flex justify-center items-center z-20 px-6 sm:px-8 md:px-12 lg:px-0">
               <div className="w-full h-0 absolute left-0 top-6 sm:top-7 md:top-8 lg:top-[42px] border-t border-[rgba(55,50,47,0.12)] shadow-[0px_1px_0px_white]"></div>
 
-              <div className="w-full max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-[700px] lg:w-[700px] h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-3 sm:px-4 md:px-4 pr-2 sm:pr-3 bg-[#F7F5F3] backdrop-blur-sm shadow-[0px_0px_0px_2px_white] overflow-hidden rounded-[50px] flex justify-between items-center relative z-30">
+              <div className="w-full max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-[700px] lg:w-[700px] h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-3 sm:px-4 md:px-4 pr-2 sm:pr-3 bg-[#F7F5F3] backdrop-blur-sm shadow-[0px_0px_0px_2px_white] overflow-visible rounded-[50px] flex justify-between items-center relative z-30">
                 <div className="flex justify-center items-center">
-                  <div className="flex justify-start items-center">
+                  {/* Logo - Linked to CodeMyPixel */}
+                  <a 
+                    href="https://codemypixel.com/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex justify-start items-center hover:opacity-80 transition-opacity"
+                  >
                     <div className="flex items-center gap-2">
                       <Image src="/codemypixel-logo.png" alt="CodeMyPixel" width={24} height={24} className="w-6 h-6" />
                       <div className="flex flex-col justify-center text-[#2F3037] text-sm sm:text-base md:text-lg lg:text-xl font-medium leading-5 font-sans">
                         CodeMyPixel
                       </div>
                     </div>
-                  </div>
+                  </a>
+                  
+                  {/* Desktop Navigation */}
                   <div className="pl-3 sm:pl-4 md:pl-5 lg:pl-5 flex justify-start items-start hidden sm:flex flex-row gap-2 sm:gap-3 md:gap-4 lg:gap-4">
                     <a
                       href="https://codemypixel.com/portfolio/"
@@ -127,7 +162,7 @@ export default function LandingPage() {
                         Portfolio
                       </div>
                     </a>
-                    <button onClick={scrollToPricing} className="flex justify-start items-center">
+                    <button onClick={scrollToPricingSection} className="flex justify-start items-center">
                       <div className="flex flex-col justify-center text-[rgba(49,45,43,0.80)] text-xs md:text-[13px] font-medium leading-[14px] font-sans hover:text-[#37322F] transition-colors">
                         Pricing
                       </div>
@@ -152,12 +187,14 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
+                
                 <div className="h-6 sm:h-7 md:h-8 flex justify-start items-start gap-2 sm:gap-3">
+                  {/* Home Icon - Hidden on Mobile */}
                   <a
                     href="https://codemypixel.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2 sm:px-3 md:px-[14px] py-1 sm:py-[6px] bg-white shadow-[0px_1px_2px_rgba(55,50,47,0.12)] overflow-hidden rounded-full flex justify-center items-center hover:shadow-[0px_2px_4px_rgba(55,50,47,0.16)] transition-shadow"
+                    className="hidden sm:flex px-2 sm:px-3 md:px-[14px] py-1 sm:py-[6px] bg-white shadow-[0px_1px_2px_rgba(55,50,47,0.12)] overflow-hidden rounded-full justify-center items-center hover:shadow-[0px_2px_4px_rgba(55,50,47,0.16)] transition-shadow"
                   >
                     <svg
                       width="16"
@@ -174,20 +211,98 @@ export default function LandingPage() {
                       <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                   </a>
+                  
+                  {/* Mobile Hamburger Menu */}
+                  <div className="mobile-menu-container relative">
+                    <button
+                      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                      className="sm:hidden px-2 py-1 bg-white shadow-[0px_1px_2px_rgba(55,50,47,0.12)] overflow-hidden rounded-full flex justify-center items-center hover:shadow-[0px_2px_4px_rgba(55,50,47,0.16)] transition-shadow"
+                      aria-label="Toggle menu"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#37322F]"
+                      >
+                        {mobileMenuOpen ? (
+                          <>
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </>
+                        ) : (
+                          <>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                          </>
+                        )}
+                      </svg>
+                    </button>
+                    
+                    {/* Mobile Dropdown Menu */}
+                    {mobileMenuOpen && (
+                      <div className="sm:hidden absolute top-full right-0 mt-2 w-48 bg-white shadow-[0px_4px_12px_rgba(55,50,47,0.15)] rounded-lg overflow-hidden border border-[rgba(55,50,47,0.12)] z-50">
+                    <div className="py-2">
+                      <a
+                        href="https://codemypixel.com/portfolio/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-4 py-3 text-[#37322F] text-sm font-medium hover:bg-[#F7F5F3] transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Portfolio
+                      </a>
+                      <button
+                        onClick={(e) => {
+                          scrollToPricingSection(e)
+                          setMobileMenuOpen(false)
+                        }}
+                        className="w-full text-left block px-4 py-3 text-[#37322F] text-sm font-medium hover:bg-[#F7F5F3] transition-colors"
+                      >
+                        Pricing
+                      </button>
+                      <a
+                        href="https://codemypixel.com/blog/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-4 py-3 text-[#37322F] text-sm font-medium hover:bg-[#F7F5F3] transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Blog
+                      </a>
+                      <button
+                        onClick={() => {
+                          scrollToCalendar()
+                          setMobileMenuOpen(false)
+                        }}
+                        className="w-full text-left block px-4 py-3 text-[#37322F] text-sm font-medium hover:bg-[#F7F5F3] transition-colors"
+                      >
+                        Book
+                      </button>
+                    </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Hero Section */}
-            <div className="pt-16 sm:pt-20 md:pt-24 lg:pt-[216px] pb-8 sm:pb-12 md:pb-16 flex flex-col justify-start items-center px-2 sm:px-4 md:px-8 lg:px-0 w-full sm:pl-0 sm:pr-0 pl-0 pr-0">
-              <div className="w-full max-w-[937px] lg:w-[937px] flex flex-col justify-center items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6">
-                <div className="self-stretch rounded-[3px] flex flex-col justify-center items-center gap-4 sm:gap-5 md:gap-6 lg:gap-8">
-                  <div className="w-full max-w-[748.71px] lg:w-[748.71px] text-center flex justify-center flex-col text-[#37322F] text-[24px] xs:text-[28px] sm:text-[36px] md:text-[52px] lg:text-[80px] font-normal leading-[1.1] sm:leading-[1.15] md:leading-[1.2] lg:leading-24 font-serif px-2 sm:px-4 md:px-0">
+            <div className="pt-32 sm:pt-32 md:pt-40 lg:pt-[216px] pb-32 sm:pb-16 md:pb-20 lg:pb-24 min-h-[85vh] sm:min-h-0 flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 lg:px-0 w-full">
+              <div className="w-full max-w-[937px] lg:w-[937px] flex flex-col justify-center items-center gap-10 sm:gap-8 md:gap-10 lg:gap-12">
+                <div className="self-stretch rounded-[3px] flex flex-col justify-center items-center gap-10 sm:gap-7 md:gap-8 lg:gap-10">
+                  <div className="w-full max-w-[748.71px] lg:w-[748.71px] text-center flex justify-center flex-col text-[#37322F] text-[38px] xs:text-[42px] sm:text-[48px] md:text-[64px] lg:text-[80px] font-normal leading-[1.25] sm:leading-[1.2] md:leading-[1.2] lg:leading-24 font-serif px-2 sm:px-4 md:px-0">
                     Effortless custom contract:
                     <br />
                     Turnkey offshore teams for AI, SaaS & ERP
                   </div>
-                  <div className="w-full max-w-[506.08px] lg:w-[506.08px] text-center flex justify-center flex-col text-[rgba(55,50,47,0.80)] sm:text-lg md:text-xl leading-[1.4] sm:leading-[1.45] md:leading-[1.5] lg:leading-7 font-sans px-2 sm:px-4 md:px-0 lg:text-lg font-medium text-sm">
+                  <div className="w-full max-w-[506.08px] lg:w-[506.08px] text-center flex justify-center flex-col text-[rgba(55,50,47,0.80)] text-lg sm:text-lg md:text-xl leading-[1.7] sm:leading-[1.55] md:leading-[1.6] lg:leading-7 font-sans px-2 sm:px-4 md:px-0 font-medium">
                     Get tailored, easy-to-sign agreements
                     <br className="hidden sm:block" />
                     that put a hand-picked, full-time engineering team
@@ -376,15 +491,13 @@ export default function LandingPage() {
                           <rect x="7" y="7" width="4" height="4" stroke="#37322F" strokeWidth="1" fill="none" />
                         </svg>
                       }
-                      text="Bento grid"
+                      text="Why Choose Us"
                     />
                     <div className="w-full max-w-[598.06px] lg:w-[598.06px] text-center flex justify-center flex-col text-[#49423D] text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-                      Built for absolute clarity and focused work
+                      Why Choose CodeMyPixel?
                     </div>
                     <div className="self-stretch text-center text-[#605A57] text-sm sm:text-base font-normal leading-6 sm:leading-7 font-sans">
-                      Stay focused with tools that organize, connect
-                      <br />
-                      and turn information into confident decisions.
+                      Trusted by international clients to deliver scalable offshore teams, product engineering, and measurable business outcomes or One time project builder on contract.
                     </div>
                   </div>
                 </div>
@@ -404,14 +517,14 @@ export default function LandingPage() {
                   </div>
 
                   <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-0 border-l border-r border-[rgba(55,50,47,0.12)]">
-                    {/* Top Left - Smart. Simple. Brilliant. */}
+                    {/* Top Left - Proven International Experience */}
                     <div className="border-b border-r-0 md:border-r border-[rgba(55,50,47,0.12)] p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] text-lg sm:text-xl font-semibold leading-tight font-sans">
-                          Smart. Simple. Brilliant.
+                          Proven International Experience
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          Your data is beautifully organized so you see everything clearly without the clutter.
+                          We Delivered numerous large scale international projects with cross border collaboration, on time releases, and measurable impact.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex items-center justify-center overflow-hidden">
@@ -424,14 +537,14 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {/* Top Right - Your work, in sync */}
+                    {/* Top Right - Access to Skilled Forces */}
                     <div className="border-b border-[rgba(55,50,47,0.12)] p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] font-semibold leading-tight font-sans text-lg sm:text-xl">
-                          Your work, in sync
+                          Access to Skilled Forces
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          Every update flows instantly across your team and keeps collaboration effortless and fast.
+                          Bangladesh produces over 50,000 tech graduates every year, with a growing community of 2 million+ IT professionals ready to scale.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex overflow-hidden text-right items-center justify-center">
@@ -444,14 +557,14 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {/* Bottom Left - Effortless integration */}
+                    {/* Bottom Left - Experienced Offshore Management */}
                     <div className="border-r-0 md:border-r border-[rgba(55,50,47,0.12)] p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6 bg-transparent">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] text-lg sm:text-xl font-semibold leading-tight font-sans">
-                          Effortless integration
+                          Experienced Offshore Management
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          All your favorite tools connect in one place and work together seamlessly by design.
+                          Local leadership handles hiring, onboarding, PM, and QA, ensuring U.S. standard processes, transparent reporting, and consistent delivery.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex overflow-hidden justify-center items-center relative bg-transparent">
@@ -463,14 +576,14 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {/* Bottom Right - Numbers that speak */}
+                    {/* Bottom Right - Flexible Contract Based Hiring */}
                     <div className="p-4 sm:p-6 md:p-8 lg:p-12 flex flex-col justify-start items-start gap-4 sm:gap-6">
                       <div className="flex flex-col gap-2">
                         <h3 className="text-[#37322F] text-lg sm:text-xl font-semibold leading-tight font-sans">
-                          Numbers that speak
+                          Flexible Contract Based Hiring
                         </h3>
                         <p className="text-[#605A57] text-sm md:text-base font-normal leading-relaxed font-sans">
-                          Track growth with precision and turn raw data into confident decisions you can trust.
+                          Scale teams up or down on contractual terms, payroll managed locally, fast replacements, and flexible billing models.
                         </p>
                       </div>
                       <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] rounded-lg flex overflow-hidden items-center justify-center relative">

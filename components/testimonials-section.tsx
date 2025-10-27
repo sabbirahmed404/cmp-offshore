@@ -16,7 +16,7 @@ function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
 }
 
 export default function TestimonialsSection() {
-  const [activeTestimonial, setActiveTestimonial] = useState(0)
+  const [activeTestimonial, setActiveTestimonial] = useState<number>(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
   const testimonials = [
@@ -68,7 +68,7 @@ export default function TestimonialsSection() {
     const interval = setInterval(() => {
       setIsTransitioning(true)
       setTimeout(() => {
-        setActiveTestimonial((prev) => (prev + 1) % testimonials.length)
+        setActiveTestimonial((prev: number) => (prev + 1) % testimonials.length)
         setTimeout(() => {
           setIsTransitioning(false)
         }, 100)
@@ -91,11 +91,11 @@ export default function TestimonialsSection() {
   return (
     <div className="w-full border-b border-border flex flex-col justify-center items-center">
       {/* Testimonial Content */}
-      <div className="self-stretch px-2 overflow-hidden flex justify-start items-center bg-background border border-b border-l-0 border-r-0 border-t-0">
-        <div className="flex-1 py-16 md:py-17 flex flex-col md:flex-row justify-center items-end gap-6">
-          <div className="self-stretch px-3 md:px-12 justify-center items-start gap-4 flex flex-col md:flex-row">
+      <div className="self-stretch px-2 overflow-hidden h-[560px] md:h-[470px] flex justify-start items-center bg-background border border-b border-l-0 border-r-0 border-t-0">
+        <div className="flex-1 py-16 md:py-17 h-full min-h-0 flex flex-col md:flex-row justify-center items-center md:items-end gap-6">
+          <div className="self-stretch px-3 md:px-12 justify-center items-center md:items-start gap-4 flex flex-col md:flex-row min-h-0">
             <img
-              className="w-48 h-50 md:w-48 md:h-50 rounded-lg object-cover transition-all duration-700 ease-in-out"
+              className="w-48 h-50 md:w-48 md:h-50 rounded-lg object-cover transition-all duration-700 ease-in-out mx-auto md:mx-0 self-center md:self-auto"
               style={{
                 opacity: isTransitioning ? 0.6 : 1,
                 transform: isTransitioning ? "scale(0.95)" : "scale(1)",
@@ -104,7 +104,7 @@ export default function TestimonialsSection() {
               src={testimonials[activeTestimonial].image || "/placeholder.svg"}
               alt={testimonials[activeTestimonial].name}
             />
-            <div className="flex-1 px-6 py-6 shadow-[0px_0px_0px_0.75px_rgba(50,45,43,0.12)] overflow-hidden flex flex-col justify-start items-start gap-6 shadow-none pb-0 pt-0">
+            <div className="flex-1 px-6 py-6 shadow-[0px_0px_0px_0.75px_rgba(50,45,43,0.12)] overflow-y-auto h-full min-h-0 flex flex-col justify-start items-start gap-6 shadow-none pb-0 pt-0">
               <div
                 className="self-stretch justify-start flex flex-col text-foreground text-[17px] md:text-[23px] font-medium leading-[29px] md:leading-[31px] font-sans transition-all duration-700 ease-in-out tracking-tight"
                 style={{

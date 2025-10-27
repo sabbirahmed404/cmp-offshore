@@ -225,7 +225,7 @@ export default function PricingSection() {
   }
 
   return (
-    <div className="w-full flex flex-col justify-center items-center gap-2">
+    <div id="pricing-section" className="w-full flex flex-col justify-center items-center gap-2">
       {/* Header Section */}
       <div className="self-stretch px-6 md:px-24 py-12 md:py-16 border-b border-[rgba(55,50,47,0.12)] flex justify-center items-center gap-6">
         <div className="w-full max-w-[586px] px-6 py-5 shadow-[0px_2px_4px_rgba(50,45,43,0.06)] overflow-hidden rounded-lg flex flex-col justify-start items-center gap-4 shadow-none">
@@ -290,7 +290,7 @@ export default function PricingSection() {
                       Free Strategy & Consultation
                     </h3>
                     <p className="text-[rgba(41,37,35,0.70)] text-base font-normal leading-6 font-sans">
-                      30 minute planning session — hiring strategy, roadmap, and delivery plan at no charge.
+                      30 minute planning session,  hiring strategy, roadmap, and delivery plan at no charge.
                     </p>
                   </div>
                 </div>
@@ -307,27 +307,27 @@ export default function PricingSection() {
                 </div>
 
             {/* Team Cost Estimator Card - Full Width */}
-            <div className="w-full px-8 py-8 bg-[#FAFAFA] border border-[rgba(50,45,43,0.12)] overflow-hidden flex flex-col justify-start items-start gap-8 rounded-lg">
-              <div className="self-stretch flex flex-col gap-4">
-                <h3 className="text-[rgba(55,50,47,0.90)] text-2xl font-semibold leading-8 font-sans">
+            <div className="w-full px-3 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 bg-[#FAFAFA] border border-[rgba(50,45,43,0.12)] overflow-hidden flex flex-col justify-start items-start gap-4 sm:gap-6 md:gap-8 rounded-lg">
+              <div className="self-stretch flex flex-col gap-2 sm:gap-3 md:gap-4">
+                <h3 className="text-[rgba(55,50,47,0.90)] text-xl sm:text-2xl font-semibold leading-7 sm:leading-8 font-sans">
                   Team Cost Estimator
                 </h3>
-                <p className="text-[rgba(41,37,35,0.70)] text-sm font-normal leading-5 font-sans">
+                <p className="text-[rgba(41,37,35,0.70)] text-xs sm:text-sm font-normal leading-4 sm:leading-5 font-sans">
                   Configure roles, seniority, and duration to view instant, transparent cost estimates.
                 </p>
             </div>
 
               {/* Quick Controls - Horizontal Layout */}
-              <div className="self-stretch flex flex-col lg:flex-row gap-6 items-start lg:items-end">
+              <div className="self-stretch flex flex-col lg:flex-row gap-3 sm:gap-4 md:gap-6 items-start lg:items-end overflow-x-auto">
                 {/* Duration Selector */}
-                <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-[#37322F] text-sm font-medium">Duration</label>
-                  <div className="flex gap-2">
+                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[140px] sm:min-w-0">
+                  <label className="text-[#37322F] text-xs sm:text-sm font-medium">Duration</label>
+                  <div className="flex gap-1 sm:gap-2">
                     {([1, 3, 6, 12] as Duration[]).map((d) => (
                       <button
                         key={d}
                         onClick={() => setDuration(d)}
-                        className={`flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                        className={`flex-1 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg border text-xs sm:text-sm font-medium transition-all ${
                           duration === d
                             ? "bg-[#37322F] text-white border-[#37322F]"
                             : "bg-white text-[#605A57] border-[#E0DEDB] hover:border-[#37322F]"
@@ -340,12 +340,12 @@ export default function PricingSection() {
                 </div>
 
                 {/* Work Model */}
-                <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-[#37322F] text-sm font-medium">Work Model</label>
+                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[140px] sm:min-w-0">
+                  <label className="text-[#37322F] text-xs sm:text-sm font-medium">Work Model</label>
                   <select
                     value={workModel}
                     onChange={(e) => setWorkModel(e.target.value as WorkModel)}
-                    className="w-full px-3 py-2 bg-white border border-[#E0DEDB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                    className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
                   >
                     <option>Fixed team</option>
                     <option>Time & Materials</option>
@@ -354,12 +354,12 @@ export default function PricingSection() {
                 </div>
 
                 {/* Currency */}
-                <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-[#37322F] text-sm font-medium">Currency</label>
+                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[100px] sm:min-w-0">
+                  <label className="text-[#37322F] text-xs sm:text-sm font-medium">Currency</label>
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value as Currency)}
-                    className="w-full px-3 py-2 bg-white border border-[#E0DEDB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                    className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
                   >
                     <option>USD</option>
                     <option>Local</option>
@@ -367,14 +367,14 @@ export default function PricingSection() {
                 </div>
 
                 {/* Presets */}
-                <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-[#37322F] text-sm font-medium">Quick Presets</label>
-                  <div className="flex gap-2">
+                <div className="flex flex-col gap-1.5 sm:gap-2 flex-1 min-w-[180px] sm:min-w-0">
+                  <label className="text-[#37322F] text-xs sm:text-sm font-medium">Quick Presets</label>
+                  <div className="flex gap-1 sm:gap-2">
                     {PRESETS.map((preset) => (
                       <button
                         key={preset.name}
                         onClick={() => applyPreset(preset)}
-                        className="flex-1 px-3 py-2 bg-white border border-[#E0DEDB] rounded-lg text-xs font-medium text-[#605A57] hover:border-[#FF8000] hover:text-[#FF8000] transition-all"
+                        className="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-[#E0DEDB] rounded-lg text-[10px] sm:text-xs font-medium text-[#605A57] hover:border-[#FF8000] hover:text-[#FF8000] transition-all whitespace-nowrap"
                       >
                         {preset.name}
                       </button>
@@ -385,13 +385,13 @@ export default function PricingSection() {
 
               {/* Role Chips */}
               {roles.length > 0 && (
-                <div className="self-stretch flex flex-wrap gap-2">
+                <div className="self-stretch flex flex-wrap gap-1.5 sm:gap-2">
                   {roles.map((role) => (
                     <div
                       key={role.id}
-                      className="px-3 py-1.5 bg-white border border-[#E0DEDB] rounded-full flex items-center gap-2"
+                      className="px-2 sm:px-3 py-1 sm:py-1.5 bg-white border border-[#E0DEDB] rounded-full flex items-center gap-1.5 sm:gap-2"
                     >
-                      <span className="text-xs font-medium text-[#37322F]">
+                      <span className="text-[10px] sm:text-xs font-medium text-[#37322F]">
                         {role.quantity}x {role.name} ({role.seniority})
                       </span>
                       <button
@@ -420,14 +420,14 @@ export default function PricingSection() {
               )}
 
               {/* Role Selection */}
-              <div className="self-stretch flex flex-col gap-3">
-                <label className="text-[#37322F] text-sm font-medium">Add Team Members</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+              <div className="self-stretch flex flex-col gap-2 sm:gap-3">
+                <label className="text-[#37322F] text-xs sm:text-sm font-medium">Add Team Members</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3">
                   {ROLE_TEMPLATES.map((template) => (
                     <button
                       key={template.name}
                       onClick={() => addRole(template)}
-                      className="px-3 py-2.5 bg-white border border-[#E0DEDB] rounded-lg text-left text-xs text-[#37322F] hover:border-[#FF8000] hover:bg-[#FFF8F0] transition-all group"
+                      className="px-2 sm:px-3 py-2 sm:py-2.5 bg-white border border-[#E0DEDB] rounded-lg text-left text-[10px] sm:text-xs text-[#37322F] hover:border-[#FF8000] hover:bg-[#FFF8F0] transition-all group"
                     >
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-medium truncate">{template.name}</span>
@@ -478,24 +478,24 @@ export default function PricingSection() {
 
               {/* Role Cards - More Compact */}
               {roles.length > 0 && (
-                <div className="self-stretch flex flex-col gap-3">
-                  <label className="text-[#37322F] text-sm font-medium">Team Configuration</label>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2">
+                <div className="self-stretch flex flex-col gap-2 sm:gap-3">
+                  <label className="text-[#37322F] text-xs sm:text-sm font-medium">Team Configuration</label>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 max-h-[400px] overflow-y-auto pr-1 sm:pr-2">
                     {roles.map((role) => (
                       <div
                         key={role.id}
-                        className="p-3 bg-white border border-[#E0DEDB] rounded-lg flex items-center gap-3"
+                        className="p-2 sm:p-3 bg-white border border-[#E0DEDB] rounded-lg flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3"
                       >
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-xs font-semibold text-[#37322F] truncate">{role.name}</h4>
+                        <div className="flex-1 min-w-0 w-full sm:w-auto">
+                          <h4 className="text-[10px] sm:text-xs font-semibold text-[#37322F] truncate">{role.name}</h4>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
                           {/* Seniority Dropdown */}
                           <select
                             value={role.seniority}
                             onChange={(e) => updateRole(role.id, { seniority: e.target.value as Seniority })}
-                            className="px-2 py-1 bg-white border border-[#E0DEDB] rounded text-xs focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                            className="px-1.5 sm:px-2 py-1 bg-white border border-[#E0DEDB] rounded text-[10px] sm:text-xs focus:outline-none focus:ring-2 focus:ring-[#FF8000] flex-shrink-0"
                           >
                             <option>Junior</option>
                             <option>Mid</option>
@@ -504,20 +504,20 @@ export default function PricingSection() {
                           </select>
 
                           {/* Quantity Stepper */}
-                          <div className="flex items-center gap-0.5 bg-white border border-[#E0DEDB] rounded">
+                          <div className="flex items-center gap-0 bg-white border border-[#E0DEDB] rounded flex-shrink-0">
                             <button
                               onClick={() => updateRole(role.id, { quantity: Math.max(0, role.quantity - 1) })}
-                              className="px-2 py-1 text-[#6B7280] hover:text-[#37322F] hover:bg-gray-50 transition-colors text-xs"
+                              className="px-1.5 sm:px-2 py-1 text-[#6B7280] hover:text-[#37322F] hover:bg-gray-50 transition-colors text-[10px] sm:text-xs"
                               aria-label="Decrease quantity"
                             >
                               −
                             </button>
-                            <span className="px-2 text-xs font-medium text-[#37322F] min-w-[1.5ch] text-center">
+                            <span className="px-1.5 sm:px-2 text-[10px] sm:text-xs font-medium text-[#37322F] min-w-[1.5ch] text-center">
                               {role.quantity}
                             </span>
                             <button
                               onClick={() => updateRole(role.id, { quantity: Math.min(20, role.quantity + 1) })}
-                              className="px-2 py-1 text-[#6B7280] hover:text-[#37322F] hover:bg-gray-50 transition-colors text-xs"
+                              className="px-1.5 sm:px-2 py-1 text-[#6B7280] hover:text-[#37322F] hover:bg-gray-50 transition-colors text-[10px] sm:text-xs"
                               aria-label="Increase quantity"
                             >
                               +
@@ -525,15 +525,15 @@ export default function PricingSection() {
                           </div>
 
                           {/* Monthly Rate */}
-                          <div className="flex items-center gap-0.5">
-                            <span className="text-xs text-[#6B7280]">$</span>
+                          <div className="flex items-center gap-0.5 flex-shrink-0">
+                            <span className="text-[10px] sm:text-xs text-[#6B7280]">$</span>
                             <input
                               type="number"
                               value={role.monthlyRate}
                               onChange={(e) =>
                                 updateRole(role.id, { monthlyRate: Math.max(0, parseInt(e.target.value) || 0) })
                               }
-                              className="w-16 px-1 py-1 bg-white border border-[#E0DEDB] rounded text-xs text-right focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
+                              className="w-12 sm:w-16 px-1 py-1 bg-white border border-[#E0DEDB] rounded text-[10px] sm:text-xs text-right focus:outline-none focus:ring-2 focus:ring-[#FF8000]"
                             />
                             <button
                               className="text-[#9CA3AF] hover:text-[#37322F]"
@@ -560,48 +560,48 @@ export default function PricingSection() {
 
               {/* Live Summary Panel - Larger */}
               {roles.length > 0 && (
-                <div className="self-stretch p-8 bg-gradient-to-br from-[#37322F] to-[#49423D] rounded-lg flex flex-col lg:flex-row gap-8 text-white">
+                <div className="self-stretch p-3 sm:p-4 md:p-6 lg:p-8 bg-gradient-to-br from-[#37322F] to-[#49423D] rounded-lg flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 text-white overflow-hidden">
                   {/* Cost Summary - Expanded */}
-                  <div className="flex-1 flex flex-col gap-6">
-                    <h4 className="text-2xl font-bold">Cost Summary</h4>
-                    <div className="flex flex-col gap-5">
-                      <div className="flex justify-between items-baseline p-4 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                        <span className="text-base text-[#D2C6BF]">Monthly Cost:</span>
-                        <span className="text-3xl font-bold">${calculations.monthlyCost.toLocaleString()}</span>
+                  <div className="flex-1 flex flex-col gap-3 sm:gap-4 md:gap-6 min-w-0">
+                    <h4 className="text-lg sm:text-xl md:text-2xl font-bold">Cost Summary</h4>
+                    <div className="flex flex-col gap-2 sm:gap-3 md:gap-5">
+                      <div className="flex justify-between items-baseline p-2 sm:p-3 md:p-4 bg-[rgba(255,255,255,0.05)] rounded-lg flex-wrap gap-2">
+                        <span className="text-xs sm:text-sm md:text-base text-[#D2C6BF]">Monthly Cost:</span>
+                        <span className="text-xl sm:text-2xl md:text-3xl font-bold">${calculations.monthlyCost.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between items-baseline p-5 bg-[rgba(255,128,0,0.1)] rounded-lg border-2 border-[#FF8000]">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-lg text-[#D2C6BF]">Total for {duration} months:</span>
-                          <span className="text-xs text-[#B2AEA9]">{duration} × ${calculations.monthlyCost.toLocaleString()}/mo</span>
+                      <div className="flex justify-between items-baseline p-3 sm:p-4 md:p-5 bg-[rgba(255,128,0,0.1)] rounded-lg border-2 border-[#FF8000] flex-wrap gap-2">
+                        <div className="flex flex-col gap-0.5 sm:gap-1">
+                          <span className="text-sm sm:text-base md:text-lg text-[#D2C6BF]">Total for {duration} months:</span>
+                          <span className="text-[10px] sm:text-xs text-[#B2AEA9]">{duration} × ${calculations.monthlyCost.toLocaleString()}/mo</span>
                   </div>
-                        <span className="text-4xl font-bold text-[#FF8000]">
+                        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#FF8000] break-all">
                           ${calculations.totalCost.toLocaleString()}
                         </span>
                 </div>
 
                       {showUSComparison && calculations.usEquivalentMonthlyCost > 0 && (
                         <>
-                          <div className="h-px bg-[rgba(255,255,255,0.1)] my-2"></div>
-                          <div className="flex justify-between items-baseline p-4 bg-[rgba(255,255,255,0.03)] rounded-lg">
-                            <span className="text-base text-[#D2C6BF]">US Equivalent:</span>
-                            <span className="text-2xl text-[#D2C6BF] line-through">
+                          <div className="h-px bg-[rgba(255,255,255,0.1)] my-1 sm:my-2"></div>
+                          <div className="flex justify-between items-baseline p-2 sm:p-3 md:p-4 bg-[rgba(255,255,255,0.03)] rounded-lg flex-wrap gap-2">
+                            <span className="text-xs sm:text-sm md:text-base text-[#D2C6BF]">US Equivalent:</span>
+                            <span className="text-lg sm:text-xl md:text-2xl text-[#D2C6BF] line-through break-all">
                               ${calculations.usEquivalentTotalCost.toLocaleString()}
                       </span>
                           </div>
-                          <div className="p-5 bg-[rgba(255,128,0,0.2)] rounded-lg border-2 border-[rgba(255,128,0,0.4)]">
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-lg font-semibold">You save:</span>
-                              <span className="text-3xl font-bold text-[#FF8000]">
+                          <div className="p-3 sm:p-4 md:p-5 bg-[rgba(255,128,0,0.2)] rounded-lg border-2 border-[rgba(255,128,0,0.4)]">
+                            <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
+                              <span className="text-sm sm:text-base md:text-lg font-semibold">You save:</span>
+                              <span className="text-xl sm:text-2xl md:text-3xl font-bold text-[#FF8000]">
                                 ~{Math.round(calculations.savings)}%
                       </span>
                     </div>
-                            <div className="h-3 bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
+                            <div className="h-2 sm:h-3 bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-[#FF8000] transition-all duration-500"
                                 style={{ width: `${calculations.savings}%` }}
                               ></div>
                             </div>
-                            <div className="mt-2 text-xs text-[#D2C6BF]">
+                            <div className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs text-[#D2C6BF] break-words">
                               That's ${(calculations.usEquivalentTotalCost - calculations.totalCost).toLocaleString()} in savings
                     </div>
                   </div>
@@ -610,58 +610,60 @@ export default function PricingSection() {
                 </div>
 
                     {/* Compare Toggle */}
-                    <label className="flex items-center gap-2 cursor-pointer p-3 bg-[rgba(255,255,255,0.05)] rounded-lg hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+                    <label className="flex items-center gap-2 cursor-pointer p-2 sm:p-3 bg-[rgba(255,255,255,0.05)] rounded-lg hover:bg-[rgba(255,255,255,0.08)] transition-colors">
                       <input
                         type="checkbox"
                         checked={showUSComparison}
                         onChange={(e) => setShowUSComparison(e.target.checked)}
-                        className="w-5 h-5 accent-[#FF8000]"
+                        className="w-4 h-4 sm:w-5 sm:h-5 accent-[#FF8000] flex-shrink-0"
                       />
-                      <span className="text-base text-[#D2C6BF]">Show US equivalent comparison</span>
+                      <span className="text-xs sm:text-sm md:text-base text-[#D2C6BF]">Show US equivalent comparison</span>
                     </label>
                   </div>
 
-                  {/* Pie Chart - Larger */}
+                  {/* Pie Chart - Responsive */}
                   {pieChartData.length > 0 && (
-                    <div className="flex-1 flex flex-col gap-4 min-h-[350px]">
-                      <h4 className="text-xl font-bold text-white">Cost Breakdown by Role</h4>
-                      <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                        <PieChart>
-                          <Pie
-                            data={pieChartData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={100}
-                            paddingAngle={2}
-                            dataKey="value"
-                            label={renderPieLabel}
-                            labelLine={false}
-                          >
-                            {pieChartData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip
-                            formatter={(value: number) => [`$${value.toLocaleString()}`, "Monthly Cost"]}
-                            contentStyle={{
-                              backgroundColor: "#37322F",
-                              border: "1px solid rgba(255,255,255,0.2)",
-                              borderRadius: "8px",
-                              color: "#FFFFFF",
-                              padding: "12px",
-                            }}
-                            labelStyle={{
-                              color: "#FFFFFF",
-                              fontWeight: "600",
-                              marginBottom: "4px",
-                            }}
-                            itemStyle={{
-                              color: "#FFFFFF",
-                            }}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
+                    <div className="flex-1 flex flex-col gap-2 sm:gap-3 md:gap-4 min-h-[220px] sm:min-h-[280px] md:min-h-[320px] lg:min-h-[350px] min-w-0">
+                      <h4 className="text-base sm:text-lg md:text-xl font-bold text-white">Cost Breakdown by Role</h4>
+                      <div className="flex-1 w-full min-w-0">
+                        <ResponsiveContainer width="100%" height="100%" minHeight={200}>
+                          <PieChart>
+                            <Pie
+                              data={pieChartData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius="35%"
+                              outerRadius="65%"
+                              paddingAngle={2}
+                              dataKey="value"
+                              label={renderPieLabel}
+                              labelLine={false}
+                            >
+                              {pieChartData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip
+                              formatter={(value: number) => [`$${value.toLocaleString()}`, "Monthly Cost"]}
+                              contentStyle={{
+                                backgroundColor: "#37322F",
+                                border: "1px solid rgba(255,255,255,0.2)",
+                                borderRadius: "8px",
+                                color: "#FFFFFF",
+                                padding: "12px",
+                              }}
+                              labelStyle={{
+                                color: "#FFFFFF",
+                                fontWeight: "600",
+                                marginBottom: "4px",
+                              }}
+                              itemStyle={{
+                                color: "#FFFFFF",
+                              }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
                 </div>
                   )}
               </div>
